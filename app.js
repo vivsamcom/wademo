@@ -1,3 +1,4 @@
+/*
 // Import Express.js
 const express = require('express');
 
@@ -34,4 +35,53 @@ app.post('/', (req, res) => {
 // Start the server
 app.listen(port, () => {
   console.log(`\nListening on port ${port}\n`);
+});
+*/
+
+require("dotenv").config();
+
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+
+const port =
+  process.env.PORT || 3000;
+
+const verifyToken =
+  process.env.VERIFY_TOKEN;
+
+const webhookRoute =
+  require("./routes/webhook");
+
+app.get("/", (req, res) => {
+
+  const {
+    "hub.mode": mode,
+    "hub.challenge": challenge,
+    "hub.verify_token": token
+  } = req.query;
+
+  if (
+    mode === "subscribe" &&
+    token === verifyToken
+  ) {
+
+    console.log("WEBHOOK VERIFIED");
+
+    return res.status(200)
+      .send(challenge);
+  }
+
+  res.sendStatus(403);
+});
+
+app.use("/", webhookRoute);
+
+app.listen(port, () => {
+
+  console.log(
+    `Listening on ${port}`
+  );
 });
