@@ -31,13 +31,25 @@ router.post("/", async (req, res) => {
 
     let reply;
 
-    if (text === "/start") {
+    const lowerText = text.toLowerCase().trim();
+    if (
+        lowerText === "hi" ||
+        lowerText === "hello" ||
+        lowerText === "hey" ||
+        lowerText === "start"
+        ){
 
       reply = `
 Welcome to TravelBuddy ✈️
 
-Try:
-• Plan a 5 day Goa trip
+I can help you with:
+• Trip planning
+• Itineraries
+• Budget estimates
+• Travel tips
+
+Example:
+• Plan a 5 day Goa trip under ₹25000
 • Thailand trip under ₹50000
 • Bali itinerary for couples
 • Best time to visit Japan
