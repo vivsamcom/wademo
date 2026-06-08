@@ -20,9 +20,9 @@ const {
   sendItineraryButtons
 } = require("../services/whatsappService");
 
+const userTrips = new Map();
 router.post("/", async (req, res) => {
 
-  const userTrips = new Map();
   try {
 
     const data =
@@ -68,14 +68,7 @@ Example:
 
     } else {
 
-      reply =
-        await getTravelResponse(text);
-
-      userTrips.set(from, reply);
-
-    }
-
-    if (text === "PLAN_TRIP") {
+      if (text === "PLAN_TRIP") {
       await sendMessage(
         from,
         `✈️ Tell me:
@@ -170,6 +163,14 @@ Example:
       pdfUrl,
       "Travel-Itinerary.pdf"
     ); */
+      reply =
+        await getTravelResponse(text);
+
+      userTrips.set(from, reply);
+
+    }
+
+    
     await sendMessage(from, reply);
 
     await sendItineraryButtons(from);
