@@ -117,10 +117,9 @@ Example:
     }
     if (text === "DOWNLOAD_PDF") {
 
-      const itinerary =
-        userTrips.get(from);
+      const tripData = userTrips.get(from);
 
-      if (!itinerary) {
+      if (!tripData) {
 
         await sendMessage(
           from,
@@ -131,7 +130,7 @@ Example:
       }
 
       const pdfFile =
-        await generateTravelPdf(itinerary);
+        await generateTravelPdf(tripData.itinerary);
 
       const pdfUrl =
         `${process.env.BASE_URL}/public/${pdfFile}`;
@@ -151,29 +150,18 @@ Example:
       return res.sendStatus(200);
     }
  
-    /*
-    const pdfFile =
-      await generateTravelPdf(reply);
-
-    const pdfUrl =
-      `${process.env.BASE_URL}/public/${pdfFile}`;
-
-    await sendDocument(
-      from,
-      pdfUrl,
-      "Travel-Itinerary.pdf"
-    ); */
       reply =
         await getTravelResponse(text);
 
-      userTrips.set(from, reply);
+      userTrips.set(from, {
+        itinerary: reply,
+        generatedAt: new Date().toISOString()
+      });
+      await sendMessage(from, reply);
+      await sendItineraryButtons(from);
 
     }
-
     
-    await sendMessage(from, reply);
-
-    await sendItineraryButtons(from);
 
     res.sendStatus(200);
 
