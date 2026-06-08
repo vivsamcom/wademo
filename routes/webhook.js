@@ -112,7 +112,7 @@ Example:
 
       return res.sendStatus(200);
     }
-    //await sendMessage(from, reply);
+    await sendMessage(from, reply);
     res.sendStatus(200);
 
   } catch (error) {
