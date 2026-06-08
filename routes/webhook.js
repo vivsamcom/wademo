@@ -16,11 +16,13 @@ const {
 const {
   sendMessage,
   sendWelcomeButtons,
-  sendDocument
+  sendDocument,
+  sendItineraryButtons
 } = require("../services/whatsappService");
 
 router.post("/", async (req, res) => {
 
+  const userTrips = new Map();
   try {
 
     const data =
@@ -68,6 +70,9 @@ Example:
 
       reply =
         await getTravelResponse(text);
+
+      userTrips.set(from, reply);
+
     }
 
     if (text === "PLAN_TRIP") {
@@ -117,8 +122,43 @@ Example:
 
       return res.sendStatus(200);
     }
-    await sendMessage(from, reply);
+    if (text === "DOWNLOAD_PDF") {
 
+      const itinerary =
+        userTrips.get(from);
+
+      if (!itinerary) {
+
+        await sendMessage(
+          from,
+          "No itinerary found. Please generate a trip plan first."
+        );
+
+        return res.sendStatus(200);
+      }
+
+      const pdfFile =
+        await generateTravelPdf(itinerary);
+
+      const pdfUrl =
+        `${process.env.BASE_URL}/public/${pdfFile}`;
+
+      await sendDocument(
+        from,
+        pdfUrl,
+        "Travel-Itinerary.pdf"
+      );
+
+      return res.sendStatus(200);
+    }
+    if (text === "MAIN_MENU") {
+
+      await sendWelcomeButtons(from);
+
+      return res.sendStatus(200);
+    }
+ 
+    /*
     const pdfFile =
       await generateTravelPdf(reply);
 
@@ -129,7 +169,10 @@ Example:
       from,
       pdfUrl,
       "Travel-Itinerary.pdf"
-    );
+    ); */
+    await sendMessage(from, reply);
+
+    await sendItineraryButtons(from);
 
     res.sendStatus(200);
 

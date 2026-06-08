@@ -90,8 +90,47 @@ async function sendDocument(
   );
 }
 
+async function sendItineraryButtons(to) {
+
+  await axios.post(
+    url,
+    {
+      messaging_product: "whatsapp",
+      to,
+      type: "interactive",
+      interactive: {
+        type: "button",
+        body: {
+          text:
+            "Would you like a downloadable PDF version of this itinerary?"
+        },
+        action: {
+          buttons: [
+            {
+              type: "reply",
+              reply: {
+                id: "DOWNLOAD_PDF",
+                title: "Download PDF"
+              }
+            },
+            {
+              type: "reply",
+              reply: {
+                id: "MAIN_MENU",
+                title: "Main Menu"
+              }
+            }
+          ]
+        }
+      }
+    },
+    { headers }
+  );
+}
+
 module.exports = {
   sendMessage,
   sendWelcomeButtons,
-  sendDocument
+  sendDocument,
+  sendItineraryButtons
 };
