@@ -70,7 +70,28 @@ async function sendWelcomeButtons(to) {
   );
 }
 
+async function sendDocument(
+  to,
+  documentUrl,
+  filename
+) {
+  await axios.post(
+    url,
+    {
+      messaging_product: "whatsapp",
+      to,
+      type: "document",
+      document: {
+        link: documentUrl,
+        filename
+      }
+    },
+    { headers }
+  );
+}
+
 module.exports = {
   sendMessage,
-  sendWelcomeButtons
+  sendWelcomeButtons,
+  sendDocument
 };

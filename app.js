@@ -79,6 +79,11 @@ app.get("/", (req, res) => {
 
 app.use("/", webhookRoute);
 
+app.use(
+  "/public",
+  express.static("public")
+);
+
 app.listen(port, () => {
 
   console.log(

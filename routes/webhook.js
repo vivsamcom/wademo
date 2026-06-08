@@ -10,8 +10,13 @@ const {
 } = require("../services/aiService");
 
 const {
+  generateTravelPdf
+} = require("../services/pdfService");
+
+const {
   sendMessage,
-  sendWelcomeButtons
+  sendWelcomeButtons,
+  sendDocument
 } = require("../services/whatsappService");
 
 router.post("/", async (req, res) => {
@@ -113,6 +118,19 @@ Example:
       return res.sendStatus(200);
     }
     await sendMessage(from, reply);
+
+    const pdfFile =
+      await generateTravelPdf(reply);
+
+    const pdfUrl =
+      `${process.env.BASE_URL}/public/${pdfFile}`;
+
+    await sendDocument(
+      from,
+      pdfUrl,
+      "Travel-Itinerary.pdf"
+    );
+
     res.sendStatus(200);
 
   } catch (error) {
