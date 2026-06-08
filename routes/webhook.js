@@ -10,7 +10,8 @@ const {
 } = require("../services/aiService");
 
 const {
-  sendMessage
+  sendMessage,
+  sendWelcomeButtons
 } = require("../services/whatsappService");
 
 router.post("/", async (req, res) => {
@@ -38,7 +39,7 @@ router.post("/", async (req, res) => {
         lowerText === "hey" ||
         lowerText === "start"
         ){
-
+/*
       reply = `
 Welcome to TravelBuddy ✈️
 
@@ -54,6 +55,9 @@ Example:
 • Bali itinerary for couples
 • Best time to visit Japan
       `;
+      */
+      await sendWelcomeButtons(from);
+      return res.sendStatus(200);
 
     } else {
 
@@ -61,8 +65,54 @@ Example:
         await getTravelResponse(text);
     }
 
-    await sendMessage(from, reply);
+    if (text === "PLAN_TRIP") {
+      await sendMessage(
+        from,
+        `✈️ Tell me:
 
+    • Destination
+    • Dates
+    • Budget
+    • Number of travellers
+
+    Example:
+    Goa for 5 days under ₹25000`
+      );
+
+      return res.sendStatus(200);
+    }
+
+    if (text === "BUDGET") {
+
+      await sendMessage(
+        from,
+        `💰 Tell me:
+
+    • Destination
+    • Number of days
+    • Number of travellers
+
+    I'll estimate the budget.`
+      );
+
+      return res.sendStatus(200);
+    }
+
+    if (text === "TRAVEL_TIPS") {
+
+      await sendMessage(
+        from,
+        `🌍 Travel Tips
+
+    • Book flights early
+    • Carry digital copies of documents
+    • Keep emergency cash
+    • Check weather before travel`
+      );
+
+      return res.sendStatus(200);
+    }
+    //await sendMessage(from, reply);
     res.sendStatus(200);
 
   } catch (error) {
