@@ -192,6 +192,48 @@ async function sendMainMenu(to, message) {
   );
 }
 
+async function sendLocationOptions(to) {
+  await sendButtons(
+    to,
+    "Would you like nearby travel locations?",
+    [
+      {
+        id: BUTTON_IDS.SEND_HOTEL_LOCATION,
+        title: "\u{1F4CD} Hotel"
+      },
+      {
+        id: BUTTON_IDS.SEND_ATTRACTION_LOCATION,
+        title: "\u{1F3D6} Attraction"
+      },
+      {
+        id: BUTTON_IDS.QUOTE,
+        title: "\u{1F4AC} Quote"
+      }
+    ]
+  );
+}
+
+async function sendQuoteActionButtons(to) {
+  await sendButtons(
+    to,
+    "What would you like to do next?",
+    [
+      {
+        id: BUTTON_IDS.SEND_BOOKING_CONFIRMATION,
+        title: "\u{2705} Confirm Booking"
+      },
+      {
+        id: BUTTON_IDS.SEND_HOTEL_LOCATION,
+        title: "\u{1F4CD} Hotel Location"
+      },
+      {
+        id: BUTTON_IDS.MAIN_MENU,
+        title: "\u{1F3E0} Main Menu"
+      }
+    ]
+  );
+}
+
 async function sendTypingText(to, text) {
   await sendTextMessage(to, text);
 }
@@ -220,6 +262,8 @@ module.exports = {
   sendTravellersQuestion,
   sendBudgetQuestion,
   sendMainMenu,
+  sendLocationOptions,
+  sendQuoteActionButtons,
   sendTypingText,
   getBudgetValue
 };

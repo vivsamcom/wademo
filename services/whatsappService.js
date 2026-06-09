@@ -104,6 +104,96 @@ async function sendDocument(to, documentUrl, filename) {
   );
 }
 
+async function sendLocation(to, latitude, longitude, name, address) {
+  const numericLatitude =
+    Number(latitude);
+
+  const numericLongitude =
+    Number(longitude);
+
+  if (
+    !Number.isFinite(numericLatitude) ||
+    !Number.isFinite(numericLongitude)
+  ) {
+    throw new Error("Invalid location coordinates");
+  }
+
+  await postMessage(
+    {
+      messaging_product: "whatsapp",
+      to,
+      type: "location",
+      location: {
+        latitude: numericLatitude,
+        longitude: numericLongitude,
+        ...(name ? { name } : {}),
+        ...(address ? { address } : {})
+      }
+    }
+  );
+}
+
+function normalizeTemplateParameters(parameters) {
+  if (!Array.isArray(parameters)) {
+    return [];
+  }
+
+  return parameters
+    .filter((parameter) => parameter !== null && parameter !== undefined)
+    .map((parameter) => {
+      if (
+        typeof parameter === "object" &&
+        parameter.type
+      ) {
+        return parameter;
+      }
+
+      return {
+        type: "text",
+        text: String(parameter)
+      };
+    });
+}
+
+async function sendTemplateMessage(
+  to,
+  templateName,
+  languageCode,
+  parameters
+) {
+  if (!templateName) {
+    throw new Error("Template name is required");
+  }
+
+  const templateParameters =
+    normalizeTemplateParameters(parameters);
+
+  const template = {
+    name: templateName,
+    language: {
+      code: languageCode || "en_US"
+    }
+  };
+
+  if (templateParameters.length > 0) {
+    template.components = [
+      {
+        type: "body",
+        parameters: templateParameters
+      }
+    ];
+  }
+
+  await postMessage(
+    {
+      messaging_product: "whatsapp",
+      to,
+      type: "template",
+      template
+    }
+  );
+}
+
 async function sendMessage(to, message) {
   return sendTextMessage(to, message);
 }
@@ -158,5 +248,7 @@ module.exports = {
   sendMessage,
   sendWelcomeButtons,
   sendDocument,
-  sendItineraryButtons
+  sendItineraryButtons,
+  sendLocation,
+  sendTemplateMessage
 };

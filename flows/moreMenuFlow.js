@@ -22,6 +22,7 @@ const {
 const {
   sendButtons,
   sendListMessage,
+  sendTemplateMessage,
   sendTextMessage
 } = require("../services/whatsappService");
 const {
@@ -34,6 +35,7 @@ const {
   sendDaysQuestion,
   sendDestinationList,
   sendMainMenu,
+  sendQuoteActionButtons,
   sendTravellersQuestion
 } = require("./flowHelpers");
 
@@ -402,7 +404,8 @@ async function continueQuote(to, session) {
       budget: quoteData.budget,
       currentState: STATES.MAIN_MENU,
       quoteStep: null,
-      quoteData: null
+      quoteData: null,
+      lastAction: "quote"
     }
   );
 
@@ -418,6 +421,51 @@ Budget: ${quoteData.budget}
 
 Your quote request has been saved. A consultant will contact you shortly.`
   );
+  await sendQuoteActionButtons(to);
+}
+
+async function sendBookingConfirmation(to, session) {
+  const templateName =
+    process.env.WHATSAPP_BOOKING_TEMPLATE_NAME;
+
+  const languageCode =
+    process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US";
+
+  const parameters = [
+    session.destination || "your destination",
+    session.travelMonth || "your travel month",
+    session.days || "your trip duration",
+    session.travellers || "your travellers"
+  ];
+
+  try {
+    await sendTemplateMessage(
+      to,
+      templateName,
+      languageCode,
+      parameters
+    );
+
+    updateSession(
+      to,
+      {
+        lastAction: "booking-confirmation"
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Booking template send error:",
+      error.response?.data || error.message
+    );
+
+    await sendTextMessage(
+      to,
+      `\u{2705} Booking Confirmation
+
+Thanks for confirming your ${session.destination || "trip"} booking request. A TravelBuddy consultant will verify availability and contact you shortly.`
+    );
+  }
+
   await sendMainMenu(to, NEXT_STEPS_TEXT);
 }
 
@@ -643,6 +691,7 @@ module.exports = {
   handleMoreMenuSelection,
   handleFeatureDestination,
   handleContactAgent,
+  sendBookingConfirmation,
   startQuote,
   handleQuote
 };

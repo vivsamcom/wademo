@@ -1,4 +1,5 @@
 const BUTTON_IDS = require("../constants/buttonIds");
+const locationData = require("../constants/locationData");
 const STATES = require("../constants/states");
 const parseMessage = require("../utils/messageParser");
 const {
@@ -14,6 +15,7 @@ const {
 } = require("../services/pdfService");
 const {
   sendDocument,
+  sendLocation,
   sendItineraryButtons,
   sendTextMessage
 } = require("../services/whatsappService");
@@ -30,6 +32,7 @@ const {
   sendMoreMenu,
   handleMoreMenuSelection,
   handleFeatureDestination,
+  sendBookingConfirmation,
   startQuote,
   handleQuote
 } = require("../flows/moreMenuFlow");
@@ -38,6 +41,8 @@ const {
   handleQuiz
 } = require("../flows/quizFlow");
 const {
+  sendLocationOptions,
+  sendQuoteActionButtons,
   sendMainMenu
 } = require("../flows/flowHelpers");
 
@@ -145,13 +150,25 @@ function inferTextIntent(message) {
   return null;
 }
 
+function getLocationDestination(session) {
+  return session.destination ||
+    session.quoteData?.destination ||
+    null;
+}
+
+function getDestinationKey(destination) {
+  return (destination || "")
+    .trim()
+    .toLowerCase();
+}
+
 async function sendPdf(to, session) {
   if (!session.itinerary) {
     await sendTextMessage(
       to,
       "No itinerary found. Please generate a trip plan first."
     );
-    return;
+    return false;
   }
 
   const baseUrl =
@@ -162,20 +179,96 @@ async function sendPdf(to, session) {
       to,
       "PDF sharing needs BASE_URL to be configured. Please ask the admin to set the public app URL."
     );
+    return false;
+  }
+
+  try {
+    const pdfFile =
+      await generateTravelPdf(session.itinerary);
+
+    const pdfUrl =
+      `${baseUrl.replace(/\/$/, "")}/public/${pdfFile}`;
+
+    await sendDocument(
+      to,
+      pdfUrl,
+      "Travel-Itinerary.pdf"
+    );
+
+    return true;
+  } catch (error) {
+    console.error(
+      "PDF send error:",
+      error.response?.data || error.message
+    );
+
+    await sendTextMessage(
+      to,
+      "I could not send the PDF right now. Please try again in a moment."
+    );
+
+    return false;
+  }
+}
+
+async function sendLocationFollowUp(to, session) {
+  if (session.lastAction === "quote") {
+    await sendQuoteActionButtons(to);
     return;
   }
 
-  const pdfFile =
-    await generateTravelPdf(session.itinerary);
+  await sendLocationOptions(to);
+}
 
-  const pdfUrl =
-    `${baseUrl.replace(/\/$/, "")}/public/${pdfFile}`;
+async function handleLocationRequest(to, session, locationType) {
+  const destination =
+    getLocationDestination(session);
 
-  await sendDocument(
-    to,
-    pdfUrl,
-    "Travel-Itinerary.pdf"
-  );
+  if (!destination) {
+    await sendTextMessage(
+      to,
+      "Please plan a trip or share a destination first, then I can send nearby locations."
+    );
+    await sendMainMenu(to);
+    return;
+  }
+
+  const destinationKey =
+    getDestinationKey(destination);
+
+  const location =
+    locationData[destinationKey]?.[locationType];
+
+  if (!location) {
+    await sendTextMessage(
+      to,
+      `I do not have a saved ${locationType} location for ${destination} yet. You can still request a quote or choose another destination.`
+    );
+    await sendLocationFollowUp(to, session);
+    return;
+  }
+
+  try {
+    await sendLocation(
+      to,
+      location.latitude,
+      location.longitude,
+      location.name,
+      location.address
+    );
+  } catch (error) {
+    console.error(
+      "Location send error:",
+      error.response?.data || error.message
+    );
+
+    await sendTextMessage(
+      to,
+      `I could not send the ${locationType} pin right now. Please try again in a moment.`
+    );
+  }
+
+  await sendLocationFollowUp(to, session);
 }
 
 async function handleTopLevelIntent(message, session, intentId) {
@@ -205,7 +298,20 @@ async function handleTopLevelIntent(message, session, intentId) {
   }
 
   if (intentId === BUTTON_IDS.PDF) {
-    await sendPdf(to, session);
+    const pdfSent =
+      await sendPdf(to, session);
+
+    if (pdfSent) {
+      updateSession(
+        to,
+        {
+          lastAction: "pdf"
+        }
+      );
+
+      await sendLocationOptions(to);
+    }
+
     return true;
   }
 
@@ -224,6 +330,26 @@ async function handleTopLevelIntent(message, session, intentId) {
 
   if (intentId === BUTTON_IDS.QUOTE) {
     await startQuote(to, session);
+    return true;
+  }
+
+  if (intentId === BUTTON_IDS.SEND_HOTEL_LOCATION) {
+    await handleLocationRequest(to, session, "hotel");
+    return true;
+  }
+
+  if (intentId === BUTTON_IDS.SEND_ATTRACTION_LOCATION) {
+    await handleLocationRequest(to, session, "attraction");
+    return true;
+  }
+
+  if (intentId === BUTTON_IDS.SEND_BOOKING_CONFIRMATION) {
+    await sendBookingConfirmation(to, session);
+    return true;
+  }
+
+  if (intentId === BUTTON_IDS.MAIN_MENU) {
+    await sendMainMenu(to);
     return true;
   }
 

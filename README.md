@@ -5,7 +5,7 @@ WhatsApp Business Platform demo for a travel assistant powered by Groq AI.
 ## Features
 
 - WhatsApp Cloud API webhook verification and message handling
-- Reply buttons, list messages, documents, and text messages
+- Reply buttons, list messages, documents, location pins, templates, and text messages
 - Flexible free-text input in every flow
 - In-memory session state machine per phone number
 - Groq AI itinerary, budget, destination, packing, tips, and quiz responses
@@ -60,11 +60,15 @@ GROQ_API_KEY=
 GROQ_MODEL=llama-3.3-70b-versatile
 OPENWEATHER_API_KEY=
 BASE_URL=
+WHATSAPP_BOOKING_TEMPLATE_NAME=booking_confirmation
+WHATSAPP_TEMPLATE_LANGUAGE=en_US
 ```
 
 `WHATSAPP_TOKEN` is preferred. `ACCESS_TOKEN` is still supported for compatibility with the earlier demo.
 
 `BASE_URL` must be a public URL for PDF document sharing, for example an ngrok URL.
+
+`WHATSAPP_BOOKING_TEMPLATE_NAME` must match an approved WhatsApp template in Meta Business Manager. `WHATSAPP_TEMPLATE_LANGUAGE` should match that template language, for example `en_US`.
 
 ## Build And Start
 
@@ -156,6 +160,7 @@ There is no automated test suite configured yet.
 - `constants/buttonIds.js`: Stable IDs for all WhatsApp buttons and list rows.
 - `constants/states.js`: State names used by the flow state machine.
 - `constants/destinations.js`: Destination list sections and destination ID mapping.
+- `constants/locationData.js`: Static hotel and attraction coordinates for supported destination location pins.
 - `constants/visaData.js`: Static visa guidance for supported destinations.
 
 ### Utils And Public Files
@@ -181,6 +186,15 @@ User: December
 Bot: Budget preference?
 User: INR 50000
 Bot: AI itinerary + PDF / Modify / Quote buttons
+User taps: PDF
+Bot: Sends Travel-Itinerary.pdf
+Bot: Would you like nearby travel locations?
+User taps: Hotel
+Bot: Sends hotel location pin
+User taps: Quote
+Bot: Saves quote request and shows Confirm Booking / Hotel Location / Main Menu
+User taps: Confirm Booking
+Bot: Sends the booking confirmation template, or a text fallback if the template is unavailable
 ```
 
 ```text
@@ -203,10 +217,11 @@ Bot logs lead and confirms consultant follow-up
 - `START` / restart text -> `MAIN_MENU`
 - `PLAN_TRIP` -> `SELECT_DESTINATION` -> `SELECT_DAYS` -> `SELECT_TRAVELLERS` -> `SELECT_TRAVEL_MONTH` -> `SELECT_BUDGET` -> `SHOW_ITINERARY`
 - `MODIFY` -> `MODIFICATION` -> `MODIFY_VALUE` -> `SHOW_ITINERARY`
+- `PDF` -> sends document -> location choices: Hotel / Attraction / Quote
 - `BUDGET` -> `BUDGET_SELECT_DESTINATION` -> `BUDGET_SELECT_TRAVELLERS` -> `BUDGET_SELECT_DAYS` -> `MAIN_MENU`
 - `MORE` -> list option -> destination feature state -> `MAIN_MENU`
 - `TRAVEL_QUIZ` -> `QUIZ` preference -> budget -> region -> `MAIN_MENU`
-- `QUOTE` -> `QUOTE` missing-field capture -> lead creation -> `MAIN_MENU`
+- `QUOTE` -> `QUOTE` missing-field capture -> lead creation -> Confirm Booking / Hotel Location / Main Menu
 
 Global restart text works at any point:
 
