@@ -1,4 +1,7 @@
 const BUTTON_IDS = require("../constants/buttonIds");
+const {
+  NEXT_STEPS_TEXT
+} = require("../constants/messages");
 const STATES = require("../constants/states");
 const visaData = require("../constants/visaData");
 const {
@@ -151,7 +154,7 @@ async function handleContactAgent(to, session) {
     to,
     "\u{1F4AC} A travel consultant will contact you shortly."
   );
-  await sendMainMenu(to);
+  await sendMainMenu(to, NEXT_STEPS_TEXT);
 }
 
 async function handleTravelTips(to, session) {
@@ -164,7 +167,7 @@ async function handleTravelTips(to, session) {
     await getTravelTips(session.destination);
 
   await sendTextMessage(to, tips);
-  await sendMainMenu(to);
+  await sendMainMenu(to, NEXT_STEPS_TEXT);
 }
 
 async function handleFeatureDestination(message, session) {
@@ -211,7 +214,7 @@ async function handleFeatureDestination(message, session) {
       await exploreDestination(destination);
 
     await sendTextMessage(to, response);
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
     return;
   }
 
@@ -230,7 +233,7 @@ Detailed visa data for ${destination} is not available yet.
 - Confirm rules before booking
 - A TravelBuddy agent can help with updated guidance`
       );
-      await sendMainMenu(to);
+      await sendMainMenu(to, NEXT_STEPS_TEXT);
       return;
     }
 
@@ -242,7 +245,7 @@ Visa required: ${info.visaRequired}
 Processing time: ${info.processingTime}
 Stay duration: ${info.stayDuration}`
     );
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
     return;
   }
 
@@ -251,7 +254,7 @@ Stay duration: ${info.stayDuration}`
       await getCurrentWeather(destination);
 
     await sendTextMessage(to, weather);
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
     return;
   }
 
@@ -265,7 +268,7 @@ Stay duration: ${info.stayDuration}`
       await getBestTimeToVisit(destination);
 
     await sendTextMessage(to, response);
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
     return;
   }
 
@@ -279,7 +282,7 @@ Stay duration: ${info.stayDuration}`
       await getPackingChecklist(destination);
 
     await sendTextMessage(to, response);
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
   }
 }
 
@@ -415,7 +418,7 @@ Budget: ${quoteData.budget}
 
 Your quote request has been saved. A consultant will contact you shortly.`
   );
-  await sendMainMenu(to);
+  await sendMainMenu(to, NEXT_STEPS_TEXT);
 }
 
 async function handleQuote(message, session) {

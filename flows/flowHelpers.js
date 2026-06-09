@@ -1,5 +1,8 @@
 const BUTTON_IDS = require("../constants/buttonIds");
 const {
+  WELCOME_MENU_TEXT
+} = require("../constants/messages");
+const {
   DESTINATION_SECTIONS,
   getDestinationById
 } = require("../constants/destinations");
@@ -168,10 +171,10 @@ async function sendBudgetQuestion(to) {
   );
 }
 
-async function sendMainMenu(to) {
+async function sendMainMenu(to, message) {
   await sendButtons(
     to,
-    "\u{1F30D} Welcome to TravelBuddy\n\nHow can I help you today?",
+    message || WELCOME_MENU_TEXT,
     [
       {
         id: BUTTON_IDS.PLAN_TRIP,

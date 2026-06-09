@@ -1,4 +1,7 @@
 const BUTTON_IDS = require("../constants/buttonIds");
+const {
+  NEXT_STEPS_TEXT
+} = require("../constants/messages");
 const STATES = require("../constants/states");
 const {
   updateSession
@@ -194,7 +197,7 @@ async function handleQuiz(message, session) {
       await recommendDestination(quizData);
 
     await sendTextMessage(to, recommendation);
-    await sendMainMenu(to);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
   }
 }
 

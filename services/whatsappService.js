@@ -1,4 +1,8 @@
 const axios = require("axios");
+const {
+  NEXT_STEPS_TEXT,
+  WELCOME_MENU_TEXT
+} = require("../constants/messages");
 
 const url =
   `https://graph.facebook.com/v23.0/${process.env.PHONE_NUMBER_ID}/messages`;
@@ -107,7 +111,7 @@ async function sendMessage(to, message) {
 async function sendWelcomeButtons(to) {
   return sendButtons(
     to,
-    "\u{1F30D} Welcome to TravelBuddy\n\nHow can I help you today?",
+    WELCOME_MENU_TEXT,
     [
       {
         id: "PLAN_TRIP",
@@ -129,7 +133,7 @@ async function sendItineraryButtons(to) {
 
   return sendButtons(
     to,
-    "What would you like to do next?",
+    NEXT_STEPS_TEXT,
     [
       {
         id: "PDF",
