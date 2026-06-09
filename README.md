@@ -62,6 +62,7 @@ OPENWEATHER_API_KEY=
 BASE_URL=
 WHATSAPP_BOOKING_TEMPLATE_NAME=booking_confirmation
 WHATSAPP_TEMPLATE_LANGUAGE=en_US
+WHATSAPP_BOOKING_TEMPLATE_IMAGE_URL=
 ```
 
 `WHATSAPP_TOKEN` is preferred. `ACCESS_TOKEN` is still supported for compatibility with the earlier demo.
@@ -69,6 +70,8 @@ WHATSAPP_TEMPLATE_LANGUAGE=en_US
 `BASE_URL` must be a public URL for PDF document sharing, for example an ngrok URL.
 
 `WHATSAPP_BOOKING_TEMPLATE_NAME` must match an approved WhatsApp template in Meta Business Manager. `WHATSAPP_TEMPLATE_LANGUAGE` should match that template language, for example `en_US`.
+
+`WHATSAPP_BOOKING_TEMPLATE_IMAGE_URL` should be a public HTTPS image URL for image-header templates. If it is empty, the app uses `${BASE_URL}/public/booking-confirmation.png`.
 
 ## Build And Start
 

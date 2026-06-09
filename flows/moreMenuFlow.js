@@ -431,6 +431,18 @@ async function sendBookingConfirmation(to, session) {
   const languageCode =
     process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US";
 
+  const baseUrl =
+    process.env.BASE_URL;
+
+  const defaultImageUrl =
+    baseUrl
+      ? `${baseUrl.replace(/\/$/, "")}/public/booking-confirmation.png`
+      : null;
+
+  const headerImageUrl =
+    process.env.WHATSAPP_BOOKING_TEMPLATE_IMAGE_URL ||
+    defaultImageUrl;
+
   const parameters = [
     session.destination || "your destination",
     session.travelMonth || "your travel month",
@@ -443,7 +455,10 @@ async function sendBookingConfirmation(to, session) {
       to,
       templateName,
       languageCode,
-      parameters
+      parameters,
+      {
+        headerImageUrl
+      }
     );
 
     updateSession(

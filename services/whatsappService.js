@@ -159,7 +159,8 @@ async function sendTemplateMessage(
   to,
   templateName,
   languageCode,
-  parameters
+  parameters,
+  options = {}
 ) {
   if (!templateName) {
     throw new Error("Template name is required");
@@ -175,13 +176,36 @@ async function sendTemplateMessage(
     }
   };
 
+  const components = [];
+
+  if (options.headerImageUrl) {
+    components.push(
+      {
+        type: "header",
+        parameters: [
+          {
+            type: "image",
+            image: {
+              link: options.headerImageUrl
+            }
+          }
+        ]
+      }
+    );
+  }
+
   if (templateParameters.length > 0) {
-    template.components = [
+    components.push(
       {
         type: "body",
         parameters: templateParameters
       }
-    ];
+    );
+  }
+
+  if (components.length > 0) {
+    template.components =
+      components;
   }
 
   await postMessage(
