@@ -151,6 +151,7 @@ async function handleContactAgent(to, session) {
     to,
     "\u{1F4AC} A travel consultant will contact you shortly."
   );
+  await sendMainMenu(to);
 }
 
 async function handleTravelTips(to, session) {
@@ -163,6 +164,7 @@ async function handleTravelTips(to, session) {
     await getTravelTips(session.destination);
 
   await sendTextMessage(to, tips);
+  await sendMainMenu(to);
 }
 
 async function handleFeatureDestination(message, session) {
@@ -209,6 +211,7 @@ async function handleFeatureDestination(message, session) {
       await exploreDestination(destination);
 
     await sendTextMessage(to, response);
+    await sendMainMenu(to);
     return;
   }
 
@@ -227,6 +230,7 @@ Detailed visa data for ${destination} is not available yet.
 - Confirm rules before booking
 - A TravelBuddy agent can help with updated guidance`
       );
+      await sendMainMenu(to);
       return;
     }
 
@@ -238,6 +242,7 @@ Visa required: ${info.visaRequired}
 Processing time: ${info.processingTime}
 Stay duration: ${info.stayDuration}`
     );
+    await sendMainMenu(to);
     return;
   }
 
@@ -246,6 +251,7 @@ Stay duration: ${info.stayDuration}`
       await getCurrentWeather(destination);
 
     await sendTextMessage(to, weather);
+    await sendMainMenu(to);
     return;
   }
 
@@ -259,6 +265,7 @@ Stay duration: ${info.stayDuration}`
       await getBestTimeToVisit(destination);
 
     await sendTextMessage(to, response);
+    await sendMainMenu(to);
     return;
   }
 
@@ -272,6 +279,7 @@ Stay duration: ${info.stayDuration}`
       await getPackingChecklist(destination);
 
     await sendTextMessage(to, response);
+    await sendMainMenu(to);
   }
 }
 
@@ -407,6 +415,7 @@ Budget: ${quoteData.budget}
 
 Your quote request has been saved. A consultant will contact you shortly.`
   );
+  await sendMainMenu(to);
 }
 
 async function handleQuote(message, session) {

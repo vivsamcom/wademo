@@ -12,7 +12,8 @@ const {
 } = require("../services/whatsappService");
 const {
   getMessageId,
-  getMessageText
+  getMessageText,
+  sendMainMenu
 } = require("./flowHelpers");
 
 async function startQuiz(to) {
@@ -193,6 +194,7 @@ async function handleQuiz(message, session) {
       await recommendDestination(quizData);
 
     await sendTextMessage(to, recommendation);
+    await sendMainMenu(to);
   }
 }
 
