@@ -15,7 +15,10 @@ async function generateTravelPdf(content) {
 
     const doc = new PDFDocument();
 
-    doc.pipe(fs.createWriteStream(filePath));
+    const stream =
+      fs.createWriteStream(filePath);
+
+    doc.pipe(stream);
 
     doc.fontSize(20)
       .text("TravelBuddy Itinerary");
@@ -25,10 +28,11 @@ async function generateTravelPdf(content) {
     doc.fontSize(12)
       .text(content);
 
-    doc.end();
-
-    doc.on("end", () => resolve(fileName));
+    stream.on("finish", () => resolve(fileName));
     doc.on("error", reject);
+    stream.on("error", reject);
+
+    doc.end();
   });
 }
 

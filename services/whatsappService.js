@@ -5,14 +5,21 @@ const url =
 
 const headers = {
   Authorization:
-    `Bearer ${process.env.ACCESS_TOKEN}`,
+    `Bearer ${process.env.WHATSAPP_TOKEN || process.env.ACCESS_TOKEN}`,
   "Content-Type": "application/json"
 };
 
-async function sendMessage(to, message) {
-
+async function postMessage(payload) {
   await axios.post(
     url,
+    payload,
+    { headers }
+  );
+}
+
+async function sendTextMessage(to, message) {
+
+  await postMessage(
     {
       messaging_product: "whatsapp",
       to,
@@ -20,15 +27,15 @@ async function sendMessage(to, message) {
       text: {
         body: message
       }
-    },
-    { headers }
+    }
   );
 }
 
-async function sendWelcomeButtons(to) {
+async function sendButtons(to, bodyText, buttons) {
+  const safeButtons =
+    buttons.slice(0, 3);
 
-  await axios.post(
-    url,
+  await postMessage(
     {
       messaging_product: "whatsapp",
       to,
@@ -36,47 +43,51 @@ async function sendWelcomeButtons(to) {
       interactive: {
         type: "button",
         body: {
-          text:
-            "Welcome to TravelBuddy ✈️\n\nChoose an option:"
+          text: bodyText
         },
         action: {
-          buttons: [
-            {
-              type: "reply",
-              reply: {
-                id: "PLAN_TRIP",
-                title: "Plan Trip"
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "BUDGET",
-                title: "Budget"
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "TRAVEL_TIPS",
-                title: "Travel Tips"
-              }
+          buttons: safeButtons.map((button) => ({
+            type: "reply",
+            reply: {
+              id: button.id,
+              title: button.title
             }
-          ]
+          }))
         }
       }
-    },
-    { headers }
+    }
   );
 }
 
-async function sendDocument(
-  to,
-  documentUrl,
-  filename
-) {
-  await axios.post(
-    url,
+async function sendListMessage(to, bodyText, buttonText, sections) {
+  await postMessage(
+    {
+      messaging_product: "whatsapp",
+      to,
+      type: "interactive",
+      interactive: {
+        type: "list",
+        body: {
+          text: bodyText
+        },
+        action: {
+          button: buttonText,
+          sections: sections.map((section) => ({
+            title: section.title,
+            rows: section.rows.slice(0, 10).map((row) => ({
+              id: row.id,
+              title: row.title,
+              description: row.description
+            }))
+          }))
+        }
+      }
+    }
+  );
+}
+
+async function sendDocument(to, documentUrl, filename) {
+  await postMessage(
     {
       messaging_product: "whatsapp",
       to,
@@ -85,50 +96,61 @@ async function sendDocument(
         link: documentUrl,
         filename
       }
-    },
-    { headers }
+    }
+  );
+}
+
+async function sendMessage(to, message) {
+  return sendTextMessage(to, message);
+}
+
+async function sendWelcomeButtons(to) {
+  return sendButtons(
+    to,
+    "\u{1F30D} Welcome to TravelBuddy\n\nHow can I help you today?",
+    [
+      {
+        id: "PLAN_TRIP",
+        title: "\u{2708}\u{FE0F} Plan Trip"
+      },
+      {
+        id: "BUDGET",
+        title: "\u{1F4B0} Budget"
+      },
+      {
+        id: "MORE",
+        title: "\u{1F4CB} More"
+      }
+    ]
   );
 }
 
 async function sendItineraryButtons(to) {
 
-  await axios.post(
-    url,
-    {
-      messaging_product: "whatsapp",
-      to,
-      type: "interactive",
-      interactive: {
-        type: "button",
-        body: {
-          text:
-            "Would you like a downloadable PDF version of this itinerary?"
-        },
-        action: {
-          buttons: [
-            {
-              type: "reply",
-              reply: {
-                id: "DOWNLOAD_PDF",
-                title: "Download PDF"
-              }
-            },
-            {
-              type: "reply",
-              reply: {
-                id: "MAIN_MENU",
-                title: "Main Menu"
-              }
-            }
-          ]
-        }
+  return sendButtons(
+    to,
+    "What would you like to do next?",
+    [
+      {
+        id: "PDF",
+        title: "\u{1F4C4} PDF"
+      },
+      {
+        id: "MODIFY",
+        title: "\u{270F}\u{FE0F} Modify"
+      },
+      {
+        id: "QUOTE",
+        title: "\u{1F4AC} Quote"
       }
-    },
-    { headers }
+    ]
   );
 }
 
 module.exports = {
+  sendTextMessage,
+  sendButtons,
+  sendListMessage,
   sendMessage,
   sendWelcomeButtons,
   sendDocument,
