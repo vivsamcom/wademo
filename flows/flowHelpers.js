@@ -136,15 +136,15 @@ async function sendTravellersQuestion(to, prefix) {
     [
       {
         id: BUTTON_IDS.TRAVELLERS_SOLO,
-        title: "Solo"
+        title: "\u{1F464} Solo"
       },
       {
         id: BUTTON_IDS.TRAVELLERS_COUPLE,
-        title: "Couple"
+        title: "\u{1F491} Couple"
       },
       {
         id: BUTTON_IDS.TRAVELLERS_FAMILY,
-        title: "Family"
+        title: "\u{1F46A} Family"
       }
     ]
   );
@@ -157,15 +157,15 @@ async function sendBudgetQuestion(to) {
     [
       {
         id: BUTTON_IDS.BUDGET_FRIENDLY,
-        title: "Budget Friendly"
+        title: "\u{1F4B8} Budget Friendly"
       },
       {
         id: BUTTON_IDS.BUDGET_MID_RANGE,
-        title: "Mid Range"
+        title: "\u{2696}\u{FE0F} Mid Range"
       },
       {
         id: BUTTON_IDS.BUDGET_LUXURY,
-        title: "Luxury"
+        title: "\u{1F48E} Luxury"
       }
     ]
   );

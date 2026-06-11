@@ -51,12 +51,18 @@ const TRAVELLER_IDS = {
   [BUTTON_IDS.TRAVELLERS_FAMILY]: "Family"
 };
 
-const BOOKING_FOLLOW_UP_DELAY_MS = 3000;
+const BOOKING_FOLLOW_UP_DELAY_MS = 10000;
 
-function wait(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+function scheduleBookingFollowUp(to) {
+  setTimeout(() => {
+    sendMainMenu(to, NEXT_STEPS_TEXT)
+      .catch((error) => {
+        console.error(
+          "Booking follow-up send error:",
+          error.response?.data || error.message
+        );
+      });
+  }, BOOKING_FOLLOW_UP_DELAY_MS);
 }
 
 async function sendMoreMenu(to) {
@@ -489,8 +495,7 @@ Thanks for confirming your ${session.destination || "trip"} booking request. A T
     );
   }
 
-  await wait(BOOKING_FOLLOW_UP_DELAY_MS);
-  await sendMainMenu(to, NEXT_STEPS_TEXT);
+  scheduleBookingFollowUp(to);
 }
 
 async function handleQuote(message, session) {
