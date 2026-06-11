@@ -35,11 +35,11 @@ async function startQuiz(to) {
     [
       {
         id: BUTTON_IDS.QUIZ_BEACH,
-        title: "Beach"
+        title: "\u{1F3D6}\u{FE0F} Beach"
       },
       {
         id: BUTTON_IDS.QUIZ_MOUNTAINS,
-        title: "Mountains"
+        title: "\u{26F0}\u{FE0F} Mountains"
       }
     ]
   );
@@ -91,15 +91,15 @@ async function handleQuiz(message, session) {
       [
         {
           id: BUTTON_IDS.QUIZ_LOW,
-          title: "Low"
+          title: "\u{1F4B8} Low"
         },
         {
           id: BUTTON_IDS.QUIZ_MEDIUM,
-          title: "Medium"
+          title: "\u{2696}\u{FE0F} Medium"
         },
         {
           id: BUTTON_IDS.QUIZ_LUXURY,
-          title: "Luxury"
+          title: "\u{1F48E} Luxury"
         }
       ]
     );
@@ -142,11 +142,11 @@ async function handleQuiz(message, session) {
       [
         {
           id: BUTTON_IDS.QUIZ_DOMESTIC,
-          title: "Domestic"
+          title: "\u{1F3E0} Domestic"
         },
         {
           id: BUTTON_IDS.QUIZ_INTERNATIONAL,
-          title: "International"
+          title: "\u{1F30D} International"
         }
       ]
     );

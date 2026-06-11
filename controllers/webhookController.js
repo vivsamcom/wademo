@@ -81,6 +81,14 @@ const DESTINATION_FEATURE_STATES = [
   STATES.PACKING_LIST
 ];
 
+const PDF_FOLLOW_UP_DELAY_MS = 2000;
+
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 function normalizeText(text) {
   return (text || "").trim().toLowerCase();
 }
@@ -309,6 +317,7 @@ async function handleTopLevelIntent(message, session, intentId) {
         }
       );
 
+      await wait(PDF_FOLLOW_UP_DELAY_MS);
       await sendLocationOptions(to);
     }
 

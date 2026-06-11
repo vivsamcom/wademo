@@ -51,6 +51,14 @@ const TRAVELLER_IDS = {
   [BUTTON_IDS.TRAVELLERS_FAMILY]: "Family"
 };
 
+const BOOKING_FOLLOW_UP_DELAY_MS = 3000;
+
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 async function sendMoreMenu(to) {
   await sendListMessage(
     to,
@@ -62,22 +70,22 @@ async function sendMoreMenu(to) {
         rows: [
           {
             id: BUTTON_IDS.EXPLORE_DESTINATION,
-            title: "Explore Places",
+            title: "\u{1F30D} Explore Places",
             description: "Attractions, food, stay areas"
           },
           {
             id: BUTTON_IDS.VISA_INFO,
-            title: "Visa Information",
+            title: "\u{1F6C2} Visa Info",
             description: "Basic visa guidance"
           },
           {
             id: BUTTON_IDS.WEATHER,
-            title: "Weather",
+            title: "\u{1F326}\u{FE0F} Weather",
             description: "Current destination weather"
           },
           {
             id: BUTTON_IDS.BEST_TIME,
-            title: "Best Time",
+            title: "\u{1F5D3}\u{FE0F} Best Time",
             description: "Best months and seasons"
           }
         ]
@@ -87,17 +95,17 @@ async function sendMoreMenu(to) {
         rows: [
           {
             id: BUTTON_IDS.PACKING_CHECKLIST,
-            title: "Packing Checklist",
+            title: "\u{1F392} Packing List",
             description: "Destination-specific checklist"
           },
           {
             id: BUTTON_IDS.TRAVEL_TIPS,
-            title: "Travel Tips",
+            title: "\u{1F4A1} Travel Tips",
             description: "Safety, currency, food, transport"
           },
           {
             id: BUTTON_IDS.TRAVEL_QUIZ,
-            title: "Travel Quiz",
+            title: "\u{1F3AF} Travel Quiz",
             description: "Get a destination recommendation"
           }
         ]
@@ -107,12 +115,12 @@ async function sendMoreMenu(to) {
         rows: [
           {
             id: BUTTON_IDS.CONTACT_AGENT,
-            title: "Contact Agent",
+            title: "\u{260E}\u{FE0F} Contact Agent",
             description: "Request a consultant callback"
           },
           {
             id: BUTTON_IDS.GET_TRAVEL_QUOTE,
-            title: "Get Travel Quote",
+            title: "\u{1F4DD} Travel Quote",
             description: "Share details for a quote"
           }
         ]
@@ -481,6 +489,7 @@ Thanks for confirming your ${session.destination || "trip"} booking request. A T
     );
   }
 
+  await wait(BOOKING_FOLLOW_UP_DELAY_MS);
   await sendMainMenu(to, NEXT_STEPS_TEXT);
 }
 

@@ -1,4 +1,7 @@
 const BUTTON_IDS = require("../constants/buttonIds");
+const {
+  NEXT_STEPS_TEXT
+} = require("../constants/messages");
 const STATES = require("../constants/states");
 const {
   updateSession
@@ -14,7 +17,8 @@ const {
   getDestinationFromMessage,
   parseDays,
   parseTravellers,
-  sendDestinationList
+  sendDestinationList,
+  sendMainMenu
 } = require("./flowHelpers");
 
 const BUDGET_TRAVELLER_IDS = {
@@ -188,6 +192,7 @@ async function handleBudgetFlow(message, session) {
       await generateBudgetEstimate(budgetData);
 
     await sendTextMessage(to, estimate);
+    await sendMainMenu(to, NEXT_STEPS_TEXT);
   }
 }
 
