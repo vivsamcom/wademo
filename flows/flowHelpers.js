@@ -93,6 +93,61 @@ function parseTravellers(message, allowedIds) {
   return null;
 }
 
+const MONTH_ALIASES = {
+  jan: "January",
+  january: "January",
+  feb: "February",
+  february: "February",
+  mar: "March",
+  march: "March",
+  apr: "April",
+  april: "April",
+  may: "May",
+  jun: "June",
+  june: "June",
+  jul: "July",
+  july: "July",
+  aug: "August",
+  august: "August",
+  sep: "September",
+  sept: "September",
+  september: "September",
+  oct: "October",
+  october: "October",
+  nov: "November",
+  november: "November",
+  dec: "December",
+  december: "December"
+};
+
+function parseTravelMonth(message) {
+  const text =
+    getMessageText(message)
+      .replace(/,/g, " ")
+      .replace(/\s+/g, " ");
+
+  const match =
+    text.match(/^([a-zA-Z]+)(?:\s+(\d{4}))?$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const month =
+    MONTH_ALIASES[match[1].toLowerCase()];
+
+  if (!month) {
+    return null;
+  }
+
+  const year =
+    match[2];
+
+  return year
+    ? `${month} ${year}`
+    : month;
+}
+
 async function sendDestinationList(to, introText) {
   await sendListMessage(
     to,
@@ -257,6 +312,7 @@ module.exports = {
   getDestinationFromMessage,
   parseDays,
   parseTravellers,
+  parseTravelMonth,
   sendDestinationList,
   sendDaysQuestion,
   sendTravellersQuestion,

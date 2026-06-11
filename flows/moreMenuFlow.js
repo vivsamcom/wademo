@@ -30,6 +30,7 @@ const {
   getDestinationFromMessage,
   getMessageText,
   parseDays,
+  parseTravelMonth,
   parseTravellers,
   sendBudgetQuestion,
   sendDaysQuestion,
@@ -376,7 +377,7 @@ async function continueQuote(to, session) {
 
     await sendTextMessage(
       to,
-      "Which month are you planning to travel?\n\nExamples: December, January, March 2027"
+      "Which month and year are you planning to travel?\n\nExamples: December 2026, January 2027, March 2027"
     );
     return;
   }
@@ -596,12 +597,12 @@ async function handleQuote(message, session) {
 
   if (session.quoteStep === "travelMonth") {
     const travelMonth =
-      getMessageText(message);
+      parseTravelMonth(message);
 
-    if (travelMonth.length < 3) {
+    if (!travelMonth) {
       await sendTextMessage(
         to,
-        "Please enter a valid travel month.\nExample: March 2027"
+        "Please enter a valid travel month and year.\nExample: March 2027"
       );
       return;
     }

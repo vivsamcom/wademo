@@ -17,6 +17,7 @@ const {
   getMessageId,
   getMessageText,
   parseDays,
+  parseTravelMonth,
   parseTravellers,
   sendBudgetQuestion,
   sendDaysQuestion,
@@ -189,19 +190,19 @@ async function handlePlanTrip(message, session) {
 
     await sendTextMessage(
       to,
-      "Which month are you planning to travel?\n\nExamples: December, January, March 2027"
+      "Which month and year are you planning to travel?\n\nExamples: December 2026, January 2027, March 2027"
     );
     return;
   }
 
   if (session.currentState === STATES.SELECT_TRAVEL_MONTH) {
     const travelMonth =
-      getMessageText(message);
+      parseTravelMonth(message);
 
-    if (travelMonth.length < 3) {
+    if (!travelMonth) {
       await sendTextMessage(
         to,
-        "Please enter a valid travel month.\nExample: December or March 2027"
+        "Please enter a valid travel month and year.\nExample: March 2027"
       );
       return;
     }
